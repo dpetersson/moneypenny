@@ -1,93 +1,128 @@
-# MoneyPenny - AI-Powered Meeting Assistant for Obsidian 🤖📝
+# MoneyPenny - AI-Powered Meeting Assistant for Obsidian 🎙️✨
 
-MoneyPenny is your intelligent meeting assistant for Obsidian, transforming meetings into actionable notes. Building on the foundation of speech-to-text technology, MoneyPenny adds AI-powered features like meeting summaries, action item extraction, and more.
+<div align="center">
+  <img src="moneypenny.png" alt="MoneyPenny" width="400">
+</div>
+
+MoneyPenny transforms your meetings into structured, actionable notes with AI-powered insights. Record, transcribe, and let AI extract key points, action items, and participants automatically.
+
+## ✨ Features
+
+### 🎙️ Smart Recording & Transcription
+- **One-Click Recording**: Start recording with `Cmd+Shift+R` (Mac) or ribbon icon
+- **Instant Note Creation**: Creates meeting notes immediately when recording starts
+- **Timestamped Transcription**: Navigate through your meeting with timestamp markers
+- **Smart Paragraphs**: Automatically breaks transcription into readable paragraphs
+
+### 🤖 AI-Powered Analysis
+- **Participant Detection**: Automatically identifies meeting attendees from transcription
+- **Agenda Extraction**: Discovers discussion topics and meeting purposes
+- **Key Points**: Extracts 3-5 main topics or decisions
+- **Action Items**: Captures tasks with owner assignments
+- **Next Steps**: Identifies follow-up actions and future plans
+
+### 📝 Meeting Templates
+- **General Meeting**: Standard format for most meetings
+- **Daily Standup**: Yesterday/Today/Blockers format
+- **One-on-One**: Feedback and follow-up focused template
+- **Customizable**: Edit templates in `templates/` folder
+
+### 🎯 Smart Features
+- **Live Note-Taking**: Add notes during recording that AI considers in analysis
+- **Append Mode**: AI adds new participants/agenda items without overwriting
+- **Template Selection**: Choose meeting type before recording
+- **Immediate Access**: Note opens automatically for real-time editing
 
 ## 🚀 Getting Started
 
-1. Install the plugin from your Obsidian vault settings
-2. Configure your OpenAI API key in the plugin settings
-3. Start recording your meetings with enhanced AI capabilities
+### Installation
+1. Install MoneyPenny from Obsidian Community Plugins
+2. Enable the plugin in Settings → Community Plugins
+3. Configure your OpenAI API key
 
-## 🎯 Core Features
+### Configuration
+1. Go to Settings → MoneyPenny
+2. Enter your OpenAI API key (used for both transcription and AI analysis)
+3. Enable AI Analysis for meeting insights
+4. Customize templates if desired
 
-### Speech-to-Text Recording
-- **Quick Recording**: Start/stop recording with `Alt + Q`
-- **Audio Upload**: Transcribe existing audio files
-- **Smart Filing**: Automatically organize recordings and transcriptions
-
-### AI-Powered Meeting Intelligence (Coming Soon)
-- **Meeting Summaries**: Get concise AI-generated summaries
-- **Action Items**: Automatically extract and organize tasks
-- **Speaker Labels**: Identify different speakers in conversations
-- **Meeting Templates**: Pre-formatted notes for different meeting types
-
-## 📋 How to Use
+## 📋 Usage
 
 ### Recording a Meeting
-1. Click the microphone icon in the ribbon or press `Alt + Q`
-2. Speak naturally during your meeting
-3. Stop recording when done - MoneyPenny handles the rest
+1. Press `Cmd+Shift+R` (Mac) or click the microphone icon
+2. (Optional) Select meeting template when prompted
+3. Start speaking - a note is created immediately
+4. Add manual notes during the meeting in the "Notes" section
+5. Stop recording when done
+6. AI analyzes and populates the note automatically
 
-### Uploading Audio
-1. Open command palette (`Ctrl/Cmd + P`)
-2. Search for "Upload Audio File"
-3. Select your audio file for transcription
+### Meeting Note Structure
+```markdown
+### Participants
+[AI extracts attendees]
+
+### Agenda  
+[AI identifies topics]
+
+### Notes
+[Your manual notes during meeting]
+
+### Key Points
+- [AI extracts main decisions/topics]
+
+### Action Items
+- [ ] [AI extracts tasks with owners]
+
+### Next Steps
+- [AI identifies follow-ups]
+
+### Transcription
+[Timestamped meeting transcript]
+```
 
 ## ⚙️ Settings
 
-### Essential Configuration
-- **API Key**: Your OpenAI API key for transcription and AI features
-- **API URL**: Endpoint for API requests (default: OpenAI)
-- **Model**: AI model for transcription (default: whisper-1)
+### Core Settings
+- **API Key**: Your OpenAI API key (required)
+- **Model**: Transcription model (default: whisper-1)
+- **Language**: Transcription language (default: en)
 
-### Recording Options
-- **Save Recording**: Keep audio files after transcription
-- **Recordings Folder**: Where to store audio files
-- **Save Transcription**: Create new notes for each recording
-- **Transcriptions Folder**: Where to save transcription notes
+### Meeting Features
+- **Use Meeting Templates**: Enable structured note templates
+- **Prompt for Meeting Type**: Show template selector before recording
+- **Paragraph Break Threshold**: Seconds of silence for new paragraph (default: 2)
 
-### Advanced Settings
-- **Language**: Set transcription language (default: en)
-- **Prompt**: Custom vocabulary for better accuracy
-- **Debug Mode**: Enable detailed logging
+### AI Analysis
+- **Enable AI Analysis**: Extract insights from meetings
+- **AI Model**: GPT model for analysis (default: gpt-4o-mini)
 
-## 🗺️ Roadmap
+## 📝 Template Customization
 
-### Phase 1: Foundation ✓
-- Forked from whisper-obsidian-plugin
-- Rebranded as MoneyPenny
-- Maintained core transcription features
+Edit templates in the `templates/` folder:
+1. Modify `.md` files in `templates/` directory
+2. Run `npm run build` to update
+3. Templates support variables:
+   - `{{attendees}}`, `{{agenda}}`, `{{notes}}`
+   - `{{transcription}}`, `{{date}}`, `{{time}}`
 
-### Phase 2: Meeting Intelligence (In Progress)
-- Meeting detection and auto-recording
-- Enhanced transcription with timestamps
-- Meeting templates
+## 🔧 Advanced Features
 
-### Phase 3: AI Features (Planned)
-- GPT-powered meeting summaries
-- Automatic action item extraction
-- Smart tagging and categorization
+### Keyboard Shortcuts
+- `Cmd+Shift+R` (Mac) / `Ctrl+Shift+R` (Windows/Linux): Start/stop recording
 
-### Phase 4: Advanced Features (Future)
-- Real-time transcription
-- Calendar integration
-- Analytics dashboard
+### Debug Mode
+Enable in settings to see:
+- Audio file size being sent
+- Processing status notifications
 
-## 🤝 Contributing
+## 📄 License
 
-We welcome contributions! Please check our [GitHub repository](https://github.com/moneypenny) for:
-- Bug reports
-- Feature requests
-- Pull requests
-
-## 📜 License
-
-MIT License - See LICENSE file for details
+MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
-MoneyPenny is built on the foundation of the whisper-obsidian-plugin by Nik Danilov. We're grateful for the original work that made this enhanced version possible.
+MoneyPenny is built on the foundation of the whisper-obsidian-plugin. Special thanks to the original developers for their excellent speech-to-text implementation.
 
 ---
 
-**Note**: MoneyPenny is currently in active development. Features marked as "Coming Soon" or "Planned" are on our roadmap but not yet implemented.
+*MoneyPenny: Your AI meeting assistant that never misses a detail* 🎯
