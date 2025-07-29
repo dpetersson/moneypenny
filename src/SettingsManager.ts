@@ -1,5 +1,6 @@
 import { Plugin } from "obsidian";
 import * as templateData from './templates.json';
+import { CryptoHelper } from './crypto';
 
 export interface MeetingTemplate {
 	name: string;
@@ -71,10 +72,25 @@ export class SettingsManager {
 		// Always use the latest templates from source, not saved data
 		settings.meetingTemplates = DEFAULT_SETTINGS.meetingTemplates;
 		
+		// Decrypt API key if it's encrypted
+		if (settings.apiKey) {
+			const vaultPath = (this.plugin.app.vault.adapter as any).basePath || '';
+			settings.apiKey = CryptoHelper.decrypt(settings.apiKey, vaultPath);
+		}
+		
 		return settings;
 	}
 
 	async saveSettings(settings: MoneyPennySettings): Promise<void> {
-		await this.plugin.saveData(settings);
+		// Create a copy to avoid modifying the original
+		const settingsToSave = { ...settings };
+		
+		// Encrypt API key before saving
+		if (settingsToSave.apiKey) {
+			const vaultPath = (this.plugin.app.vault.adapter as any).basePath || '';
+			settingsToSave.apiKey = CryptoHelper.encrypt(settingsToSave.apiKey, vaultPath);
+		}
+		
+		await this.plugin.saveData(settingsToSave);
 	}
 }

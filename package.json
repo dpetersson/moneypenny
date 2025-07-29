@@ -1,6 +1,6 @@
 {
 	"name": "moneypenny",
-	"version": "1.5.5",
+	"version": "0.1.0",
 	"description": "AI-powered meeting assistant for Obsidian with speech-to-text, summaries, and action items",
 	"main": "main.js",
 	"scripts": {

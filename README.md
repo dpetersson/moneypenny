@@ -115,6 +115,27 @@ Enable in settings to see:
 - Audio file size being sent
 - Processing status notifications
 
+## 🔐 Security & Privacy
+
+### API Key Encryption
+- **New in v1.5.5**: API keys are now encrypted using AES-256-GCM encryption
+- Encryption key is derived from your vault path, making keys vault-specific
+- Provides protection against casual file browsing
+- Automatic backward compatibility with existing plain-text keys
+
+### API Key Storage
+- API keys are stored encrypted in `.obsidian/plugins/moneypenny/data.json`
+- This file is automatically excluded from git (via .gitignore)
+- Encryption prevents plain-text exposure of your API key
+- Keys are tied to your specific vault location
+
+### Best Practices
+1. Use a dedicated API key for MoneyPenny
+2. Set appropriate usage limits in your OpenAI account
+3. Regularly rotate your API keys
+4. Never commit data.json to version control
+5. If moving vaults, re-enter your API key (encryption is vault-specific)
+
 ## 📄 License
 
 MIT License - see LICENSE file for details

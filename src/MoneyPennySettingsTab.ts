@@ -68,16 +68,19 @@ export class MoneyPennySettingsTab extends PluginSettingTab {
 	}
 
 	private createApiKeySetting(): void {
-		this.createTextSetting(
-			"API Key",
-			"Enter your OpenAI API key",
-			"sk-...xxxx",
-			this.plugin.settings.apiKey,
-			async (value) => {
-				this.plugin.settings.apiKey = value;
-				await this.settingsManager.saveSettings(this.plugin.settings);
-			}
-		);
+		new Setting(this.containerEl)
+			.setName("API Key")
+			.setDesc("Enter your OpenAI API key")
+			.addText((text) => {
+				text
+					.setPlaceholder("sk-...xxxx")
+					.setValue(this.plugin.settings.apiKey)
+					.onChange(async (value) => {
+						this.plugin.settings.apiKey = value;
+						await this.settingsManager.saveSettings(this.plugin.settings);
+					});
+				text.inputEl.type = 'password';
+			});
 	}
 
 	private createApiUrlSetting(): void {
