@@ -118,7 +118,7 @@ Enable in settings to see:
 ## 🔐 Security & Privacy
 
 ### API Key Encryption
-- **New in v1.5.5**: API keys are now encrypted using AES-256-GCM encryption
+- **New in v0.1.0**: API keys are now encrypted using AES-256-GCM encryption
 - Encryption key is derived from your vault path, making keys vault-specific
 - Provides protection against casual file browsing
 - Automatic backward compatibility with existing plain-text keys
