@@ -1,6 +1,12 @@
 # vscode
 .vscode 
 
+# husky
+.husky
+
+# Nova
+.nova
+
 # Intellij
 *.iml
 .idea
