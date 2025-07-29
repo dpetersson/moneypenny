@@ -1,0 +1,11 @@
+{
+  "id": "moneypenny",
+  "name": "MoneyPenny",
+  "version": "1.5.5",
+  "minAppVersion": "0.15.0",
+  "description": "AI-powered meeting assistant for Obsidian with speech-to-text, summaries, and action items",
+  "author": "MoneyPenny Team",
+  "authorUrl": "https://github.com/moneypenny",
+  "fundingUrl": "https://github.com/sponsors/moneypenny",
+  "isDesktopOnly": false
+}

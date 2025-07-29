@@ -1,0 +1,5 @@
+{
+  "general": "### Participants\n{{attendees}}\n\n### Agenda\n{{agenda}}\n\n### Notes\n{{notes}}\n\n### Key Points\n- \n\n### Action Items\n- [ ] \n\n### Next Steps\n- \n\n### Transcription\n{{transcription}}",
+  "one-on-one": "### Participants\n{{attendees}}\n\n### Notes\n{{notes}}\n\n### Feedback\n- \n\n### Action Items\n- [ ] \n\n### Follow-up\n- \n\n### Transcription\n{{transcription}}",
+  "standup": "### Participants\n{{attendees}}\n\n### Notes\n{{notes}}\n\n### Yesterday\n- \n\n### Today\n- \n\n### Blockers\n- \n\n### Transcription\n{{transcription}}"
+}
