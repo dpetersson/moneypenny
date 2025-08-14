@@ -53,4 +53,8 @@ export class Timer {
 
 		return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 	}
+
+	getSeconds(): number {
+		return Math.floor(this.elapsedTime / 1000);
+	}
 }

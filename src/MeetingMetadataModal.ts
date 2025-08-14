@@ -12,18 +12,21 @@ export class MeetingMetadataModal extends Modal {
 	onSubmit: (result: MeetingMetadata) => void;
 	selectedTemplate: string;
 	availableTemplates: MeetingTemplate[];
+	buttonText: string;
 
 	constructor(
 		app: App, 
 		defaultAttendees: string, 
 		selectedTemplate: string,
 		availableTemplates: MeetingTemplate[],
-		onSubmit: (result: MeetingMetadata) => void
+		onSubmit: (result: MeetingMetadata) => void,
+		buttonText: string = "Start Recording"
 	) {
 		super(app);
 		this.onSubmit = onSubmit;
 		this.selectedTemplate = selectedTemplate;
 		this.availableTemplates = availableTemplates;
+		this.buttonText = buttonText;
 		this.result = {
 			attendees: "",
 			agenda: "",
@@ -60,7 +63,7 @@ export class MeetingMetadataModal extends Modal {
 		new Setting(contentEl)
 			.addButton((btn) =>
 				btn
-					.setButtonText("Start Recording")
+					.setButtonText(this.buttonText)
 					.setCta()
 					.onClick(() => {
 						this.close();

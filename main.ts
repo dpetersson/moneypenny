@@ -7,6 +7,8 @@ import { SettingsManager, MoneyPennySettings } from "src/SettingsManager";
 import { NativeAudioRecorder } from "src/AudioRecorder";
 import { RecordingStatus, StatusBar } from "src/StatusBar";
 import { MeetingMetadata, MeetingMetadataModal } from "src/MeetingMetadataModal";
+import { PasteTranscriptionModal } from "src/PasteTranscriptionModal";
+import { MeetingStartModal } from "src/MeetingStartModal";
 export default class MoneyPenny extends Plugin {
 	settings: MoneyPennySettings;
 	settingsManager: SettingsManager;
@@ -23,28 +25,12 @@ export default class MoneyPenny extends Plugin {
 		this.settingsManager = new SettingsManager(this);
 		this.settings = await this.settingsManager.loadSettings();
 
-		this.ribbonIconEl = this.addRibbonIcon("mic", "MoneyPenny: Start/stop recording", async (evt) => {
-			// Use the same logic as the hotkey command
-			if (this.statusBar.status !== RecordingStatus.Recording) {
-				// Show metadata modal if enabled
-				if (this.settings.promptForMetadata && this.settings.useMeetingTemplate) {
-					new MeetingMetadataModal(
-						this.app,
-						this.settings.defaultAttendees,
-						this.settings.selectedTemplate,
-						this.settings.meetingTemplates,
-						async (metadata) => {
-							this.currentMeetingMetadata = metadata;
-							this.settings.selectedTemplate = metadata.meetingType;
-							await this.settingsManager.saveSettings(this.settings);
-							await this.startRecordingWithNote(metadata);
-						}
-					).open();
-				} else {
-					await this.startRecordingWithNote();
-				}
-			} else {
+		this.ribbonIconEl = this.addRibbonIcon("mic", "MoneyPenny: Start meeting", async (evt) => {
+			// If recording, stop it. Otherwise, open meeting start modal
+			if (this.statusBar.status === RecordingStatus.Recording) {
 				await this.stopRecordingAndProcess();
+			} else {
+				new MeetingStartModal(this.app, this).open();
 			}
 		});
 
@@ -153,6 +139,65 @@ export default class MoneyPenny extends Plugin {
 		}
 	}
 
+	async createMeetingNoteOnly(metadata?: MeetingMetadata) {
+		// Create note file with formatted name
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, '0');
+		const day = String(now.getDate()).padStart(2, '0');
+		const hours = now.getHours();
+		const minutes = String(now.getMinutes()).padStart(2, '0');
+		const ampm = hours >= 12 ? 'PM' : 'AM';
+		const displayHours = hours % 12 || 12;
+		
+		const baseFileName = `${year}-${month}-${day} ${displayHours}.${minutes} ${ampm} - Meeting Notes`;
+		const noteFilePath = `${baseFileName}.md`;
+
+		// Create initial content
+		let initialContent = "";
+		if (this.settings.useMeetingTemplate) {
+			const templateName = metadata?.meetingType || this.settings.selectedTemplate;
+			const selectedTemplate = this.settings.meetingTemplates.find(
+				t => t.name === templateName
+			);
+			
+			if (selectedTemplate) {
+				// Apply template without transcription
+				initialContent = selectedTemplate.template;
+				const now = new Date();
+				const date = now.toLocaleDateString();
+				const time = now.toLocaleTimeString();
+				
+				initialContent = initialContent.replace(/\{\{date\}\}/g, date);
+				initialContent = initialContent.replace(/\{\{time\}\}/g, time);
+				initialContent = initialContent.replace(/\{\{datetime\}\}/g, `${date} ${time}`);
+				initialContent = initialContent.replace(/\{\{transcription\}\}/g, "");
+				initialContent = initialContent.replace(/\{\{notes\}\}/g, "");
+				initialContent = initialContent.replace(/\{\{audio\}\}/g, "");
+				
+				if (metadata) {
+					initialContent = initialContent.replace(/\{\{attendees\}\}/g, metadata.attendees || "");
+					initialContent = initialContent.replace(/\{\{agenda\}\}/g, metadata.agenda || "");
+				} else {
+					initialContent = initialContent.replace(/\{\{attendees\}\}/g, "");
+					initialContent = initialContent.replace(/\{\{agenda\}\}/g, "");
+				}
+			}
+		} else {
+			initialContent = `# Meeting Notes\n\n## Date: ${new Date().toLocaleDateString()}\n\n## Notes\n\n`;
+		}
+
+		try {
+			// Create and open the note
+			await this.app.vault.create(noteFilePath, initialContent);
+			await this.app.workspace.openLinkText(noteFilePath, "", true);
+			new Notice("Meeting note created");
+		} catch (err) {
+			console.error("Error creating meeting note:", err);
+			new Notice("Error creating meeting note: " + err.message);
+		}
+	}
+
 	async stopRecordingAndProcess() {
 		this.statusBar.updateStatus(RecordingStatus.Processing);
 		this.updateRibbonIcon(false);
@@ -177,8 +222,22 @@ export default class MoneyPenny extends Plugin {
 
 	addCommands() {
 		this.addCommand({
+			id: "start-meeting",
+			name: "Start new meeting",
+			callback: () => {
+				new MeetingStartModal(this.app, this).open();
+			},
+			hotkeys: [
+				{
+					modifiers: ["Mod", "Shift"],
+					key: "M",
+				},
+			],
+		});
+
+		this.addCommand({
 			id: "start-stop-recording",
-			name: "Start/stop recording",
+			name: "Start/stop recording (quick)",
 			callback: async () => {
 				if (this.statusBar.status !== RecordingStatus.Recording) {
 					// Show metadata modal if enabled
@@ -248,6 +307,26 @@ export default class MoneyPenny extends Plugin {
 				// Programmatically open the file dialog
 				fileInput.click();
 			},
+		});
+
+		this.addCommand({
+			id: "paste-transcription",
+			name: "Paste transcription (quick)",
+			callback: () => {
+				new PasteTranscriptionModal(
+					this.app,
+					this,
+					async (transcription, metadata) => {
+						await this.audioHandler.handlePastedTranscription(transcription, metadata);
+					}
+				).open();
+			},
+			hotkeys: [
+				{
+					modifiers: ["Mod", "Shift"],
+					key: "V",
+				},
+			],
 		});
 	}
 }

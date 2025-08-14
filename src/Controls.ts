@@ -1,7 +1,8 @@
 import MoneyPenny from "main";
-import { ButtonComponent, Modal } from "obsidian";
+import { ButtonComponent, Modal, Notice } from "obsidian";
 import { RecordingStatus } from "./StatusBar";
 import { MeetingMetadataModal } from "./MeetingMetadataModal";
+import { AudioChunker } from "./AudioChunker";
 
 export class Controls extends Modal {
 	private plugin: MoneyPenny;
@@ -9,6 +10,7 @@ export class Controls extends Modal {
 	private pauseButton: ButtonComponent;
 	private stopButton: ButtonComponent;
 	private timerDisplay: HTMLElement;
+	private sizeWarningDisplay: HTMLElement;
 
 	constructor(plugin: MoneyPenny) {
 		super(plugin.app);
@@ -19,9 +21,16 @@ export class Controls extends Modal {
 		this.timerDisplay = this.contentEl.createEl("div", { cls: "timer" });
 		this.updateTimerDisplay();
 
+		// Add size warning display
+		this.sizeWarningDisplay = this.contentEl.createEl("div", { 
+			cls: "size-warning",
+			attr: { style: "color: orange; font-size: 0.9em; margin-top: 5px; display: none;" }
+		});
+
 		// Set onUpdate callback for the timer
 		this.plugin.timer.setOnUpdate(() => {
 			this.updateTimerDisplay();
+			this.updateSizeWarning();
 		});
 
 		// Add button group
@@ -101,6 +110,33 @@ export class Controls extends Modal {
 
 	updateTimerDisplay() {
 		this.timerDisplay.textContent = this.plugin.timer.getFormattedTime();
+	}
+
+	updateSizeWarning() {
+		// Estimate file size based on recording duration
+		// Using 16 kbps for Opus codec (our optimized setting)
+		const seconds = this.plugin.timer.getSeconds();
+		const estimatedBits = seconds * 16000;
+		const estimatedBytes = estimatedBits / 8;
+		const estimatedMB = estimatedBytes / (1024 * 1024);
+		
+		// Show warning if approaching or exceeding limits
+		if (estimatedMB > 20) {
+			this.sizeWarningDisplay.style.display = "block";
+			if (estimatedMB > 25) {
+				this.sizeWarningDisplay.style.color = "red";
+				this.sizeWarningDisplay.textContent = `⚠️ Recording size ~${estimatedMB.toFixed(1)}MB - Exceeds 25MB limit! Will process in chunks.`;
+			} else {
+				this.sizeWarningDisplay.style.color = "orange";
+				this.sizeWarningDisplay.textContent = `⚠️ Recording size ~${estimatedMB.toFixed(1)}MB - Approaching 25MB limit`;
+			}
+		} else if (estimatedMB > 15) {
+			this.sizeWarningDisplay.style.display = "block";
+			this.sizeWarningDisplay.style.color = "yellow";
+			this.sizeWarningDisplay.textContent = `Recording size ~${estimatedMB.toFixed(1)}MB`;
+		} else {
+			this.sizeWarningDisplay.style.display = "none";
+		}
 	}
 
 	resetGUI() {
